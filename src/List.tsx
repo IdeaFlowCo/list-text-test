@@ -1,25 +1,33 @@
 import * as React from 'react'
+import he from 'he'
 
 import { withStateSelector } from './AppState'
 
-// class Item extends React.Component<any> {
-//   render() {
-//     return `Hello ${this.props.idea}`
-//   }
-// }
+import styles from './List.styl'
+
+class Item extends React.Component<any> {
+  render() {
+    return <div 
+      className={styles.listItem}
+      contentEditable
+      dangerouslySetInnerHTML={{ __html: he.encode(this.props.idea) }}
+    />
+  }
+}
+
+class List extends React.Component<any> {
+  render() {
+    return <>
+      {this.props.ideas.map((idea, i) => {
+        return <Item key={i} idea={idea} />
+      })}
+      <button onClick={() => this.props.addNewIdea("New idea")}>Add new idea</button>
+    </>
+  }
+}
 
 export default withStateSelector(
-  class List extends React.Component<any> {
-    render() {
-      return <>
-        There are {this.props.ideas.length} ideas!
-        {/* {this.props.ideas.map((idea, i) => {
-          <Item key={i} idea={idea} />
-        })} */}
-        <button onClick={() => this.props.addNewIdea("New idea")}>thing</button>
-      </>
-    }
-  },
+  List,
   (appState) => ({ ideas: appState.ideas }),
   (dispatch) => ({
     addNewIdea: (idea: string) => dispatch(appState => ({
