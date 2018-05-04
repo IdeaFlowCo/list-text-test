@@ -13,7 +13,7 @@ class Item extends React.Component<any> {
       ref={this.ref}
       className={styles.listItem}
       contentEditable
-      dangerouslySetInnerHTML={{ __html: he.encode(this.props.idea) }}
+      dangerouslySetInnerHTML={{ __html: he.encode(this.props.idea) + "\n\n" }}
 
       onKeyDown={this.onKeyDown}
     />
@@ -22,12 +22,15 @@ class Item extends React.Component<any> {
   onKeyDown = (event: React.KeyboardEvent<any>) => {
     const { key } = event
     const range = window.getSelection().getRangeAt(0)
+    const node = range.startContainer
+    const textAfterCaret = node.textContent.slice(range.startOffset)
+
     if (!range) return
 
     if (key === "ArrowUp" && range.startOffset === 0 && range.collapsed) {
       this.props.caretExit(this.props.index, -1)
       event.preventDefault()
-    } else if (key === "ArrowDown" && range.startOffset === this.props.idea.length && range.collapsed) {
+    } else if (key === "ArrowDown" && textAfterCaret.match(/^\n?$/) && range.collapsed) {
       this.props.caretExit(this.props.index, +1)
       event.preventDefault()
     }
@@ -37,11 +40,12 @@ class Item extends React.Component<any> {
     this.ref.current.focus()
     const selection = window.getSelection()
 
-    const node = this.ref.current.childNodes[0]
+    const nodeCount = this.ref.current.childNodes.length
+    const node = this.ref.current.childNodes[nodeCount-1]
 
     const range = document.createRange()
-    range.setStart(node, this.props.idea.length)
-    range.setEnd(node, this.props.idea.length)
+    range.setStart(node, node.textContent.length)
+    range.setEnd(node, node.textContent.length)
 
     selection.removeAllRanges()
     selection.addRange(range)
