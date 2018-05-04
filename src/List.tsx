@@ -23,8 +23,10 @@ class Item extends React.Component<any> {
     const { key } = event
     if (key === "ArrowUp") {
       this.props.caretExit(this.props.index, -1)
+      event.preventDefault()
     } else if (key === "ArrowDown") {
       this.props.caretExit(this.props.index, +1)
+      event.preventDefault()
     }
   }
 
@@ -32,10 +34,10 @@ class Item extends React.Component<any> {
     this.ref.current.focus()
     const selection = document.getSelection()
 
-    const node = this.ref.current.childNodes[0]
+    const node = this.ref.current
     console.log({ node })
-    const range = new Range()
-    range.selectNodeContents(node)
+    const range = document.createRange()
+    range.selectNode(node)
 
     selection.removeAllRanges()
     selection.addRange(range)
