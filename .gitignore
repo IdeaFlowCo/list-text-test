@@ -1,0 +1,46 @@
+/ts-build
+/node_modules
+/jspm_packages
+/build-backend
+/build-shared
+/build-frontend
+/build-frontend-modern
+/build-frontend-legacy
+/build-scripts
+/build-cache
+/static/**
+/coverage
+/data
+/logs
+**/.DS_Store
+circe.sublime-project
+circe.sublime-workspace
+npm-debug.log
+npm-debug.log.*
+deps.js
+.nvmrc
+.vscode
+
+**.sublime-project
+**.sublime-workspace
+
+# eclipse
+.settings/
+.project
+
+# webstorm
+.idea/
+
+*.sw*
+tags
+
+.env
+shared/herokuDefaultsPrebuildGenerated.env
+
+# font-awesome-loader
+.awcache
+
+yarn-error.log
+
+# emacs
+*~

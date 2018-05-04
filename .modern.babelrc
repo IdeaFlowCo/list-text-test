@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "@babel/preset-react",
+    ["@babel/preset-env", {
+      "targets": {
+        "browsers": ["chrome >= 61", "firefox >= 55", "edge >= 15"]
+      }
+    }]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-syntax-dynamic-import"
+  ]
+}

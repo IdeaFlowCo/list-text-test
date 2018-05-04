@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig-common.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "rootDir": ".",
+    "moduleResolution": "node",
+    "types" : ["react", "react-dom", "immutable", "node"],
+    "paths": {
+      "backend/*": [ "backend/*"],
+      "shared/*": ["shared/*"],
+      "*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "backend/**/*",
+    "shared/**/*"
+  ]
+}
