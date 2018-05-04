@@ -21,10 +21,13 @@ class Item extends React.Component<any> {
 
   onKeyDown = (event: React.KeyboardEvent<any>) => {
     const { key } = event
-    if (key === "ArrowUp") {
+    const range = window.getSelection().getRangeAt(0)
+    if (!range) return
+
+    if (key === "ArrowUp" && range.startOffset === 0 && range.collapsed) {
       this.props.caretExit(this.props.index, -1)
       event.preventDefault()
-    } else if (key === "ArrowDown") {
+    } else if (key === "ArrowDown" && range.startOffset === this.props.idea.length && range.collapsed) {
       this.props.caretExit(this.props.index, +1)
       event.preventDefault()
     }
