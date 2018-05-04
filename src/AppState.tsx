@@ -10,7 +10,7 @@ export { AppStateProvider }
 export class AppStateProviderComponent extends React.Component<{}, { appState: any }> {
   constructor(props) {
     super(props)
-    this.state = { appState: { ideas: ["First idea", "Second idea"] } }
+    this.state = { appState: { ideas: ["First idea", "Second idea", "Third idea", "Fourth idea", "Fifth idea"] } }
   }
 
   dispatch = (operation) => {
