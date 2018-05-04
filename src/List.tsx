@@ -32,12 +32,13 @@ class Item extends React.Component<any> {
 
   focusEnd = () => {
     this.ref.current.focus()
-    const selection = document.getSelection()
+    const selection = window.getSelection()
 
-    const node = this.ref.current
-    console.log({ node })
+    const node = this.ref.current.childNodes[0]
+
     const range = document.createRange()
-    range.selectNode(node)
+    range.setStart(node, this.props.idea.length)
+    range.setEnd(node, this.props.idea.length)
 
     selection.removeAllRanges()
     selection.addRange(range)
