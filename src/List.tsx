@@ -7,11 +7,22 @@ import styles from './List.styl'
 
 import { getCaretOffsetInside } from './CaretControl'
 
-class Item extends React.Component<any, any> {
+import { CreateListActions } from './ListActions'
+
+interface ItemProps {
+  index: number
+  idea: { id: string, title: string }
+  caretExit: any
+  onSplit: any
+
+  mergeIdeasInRange: any
+}
+
+class Item extends React.Component<ItemProps> {
   private ref: React.RefObject<HTMLDivElement> = React.createRef()
 
   render() {
-    const content = this.props.idea
+    const content = this.props.idea.title
     return <div
       ref={this.ref}
       className={styles.listItem}
@@ -46,6 +57,8 @@ class Item extends React.Component<any, any> {
     const { key } = event
     if (key === "Enter") {
       this.onEnter(event)
+    } else if (key === "Backspace") {
+      this.onBackspace(event)
     }
 
     const range = window.getSelection().getRangeAt(0)
@@ -63,10 +76,21 @@ class Item extends React.Component<any, any> {
     }
   }
 
+  onBackspace = (event: React.KeyboardEvent<any>) => {
+    if (this.ref.current === null) {
+      throw new Error("Component has not yet rendered")
+    }
+
+    const offset = getCaretOffsetInside(this.ref.current)
+
+    if (offset === 0) {
+      this.props.mergeIdeasInRange(this.props.index-1, this.props.index)
+      event.preventDefault()
+    }
+  }
+
   onEnter = (event: React.KeyboardEvent<any>) => {
-    console.log("ENTER")
     const { text, offset } = this.getTextAroundTheCaret(+1, +1)
-    console.log({ text, offset })
 
     const match = text.match(/\n/)
     if (match) {
@@ -102,11 +126,12 @@ class List extends React.Component<any> {
       {this.props.ideas.map((idea, i) => {
         return <Item
           ref={(item) => this.itemInstances[i] = item}
-          key={i}
+          key={idea.id}
           index={i}
           idea={idea}
           caretExit={this.caretExit}
-          onSplit={this.onSplit}
+          onSplit={this.props.onSplit}
+          mergeIdeasInRange={this.props.mergeIdeasInRange}
         />
       })}
     </>
@@ -118,28 +143,10 @@ class List extends React.Component<any> {
       instance.focusEnd()
     }
   }
-
-  private onSplit = (itemIndex: number, offset: number) => {
-    this.props.split(itemIndex, offset)
-  }
 }
 
 export default withStateSelector(
   List,
   (appState) => ({ ideas: appState.ideas }),
-  (dispatch) => ({
-    addNewIdea: (idea: string) => dispatch(appState => ({
-      ideas: [...appState.ideas, idea]
-    })),
-    split: (itemIndex, offset) => dispatch(appState => {
-      const { ideas } = appState
-      const ideaToSplit = ideas[itemIndex]
-      const newIdea1 = ideaToSplit.slice(0, offset)
-      const newIdea2 = ideaToSplit.slice(offset)
-      return {
-        ideas: [...ideas.slice(0,itemIndex), newIdea1, newIdea2, ...ideas.slice(itemIndex+1)]
-      }
-    })
-
-  })
+  CreateListActions,
 )

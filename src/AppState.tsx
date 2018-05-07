@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import uuid from 'uuid'
+
 const {
   Consumer: AppStateConsumer,
   Provider: AppStateProvider
@@ -7,10 +9,24 @@ const {
 
 export { AppStateProvider }
 
+function CreateDummyIdea(title: string) {
+  return { id: uuid.v4(), title }
+}
+
 export class AppStateProviderComponent extends React.Component<{}, { appState: any }> {
   constructor(props) {
     super(props)
-    this.state = { appState: { ideas: ["First idea", "Second idea", "Third idea", "Fourth idea", "Fifth idea"] } }
+    this.state = { 
+      appState: {
+        ideas: [
+          CreateDummyIdea("First idea"),
+          CreateDummyIdea("Second idea"),
+          CreateDummyIdea("Third idea"),
+          CreateDummyIdea("Fourth idea"),
+          CreateDummyIdea("Fifth idea"),
+        ]
+      }
+    }
   }
 
   dispatch = (operation) => {
