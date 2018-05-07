@@ -16,7 +16,8 @@
     "moduleResolution": "node",
     "traceResolution": false,
     "noStrictGenericChecks": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "types" : ["react", "react-dom", "immutable"],
     "outDir": "./ts-build",
     "baseUrl": "."

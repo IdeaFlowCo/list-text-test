@@ -5,6 +5,8 @@ import { withStateSelector } from './AppState'
 
 import styles from './List.styl'
 
+import { getCaretOffsetInside } from './CaretControl'
+
 class Item extends React.Component<any, any> {
   private ref: React.RefObject<HTMLDivElement> = React.createRef()
 
@@ -17,39 +19,21 @@ class Item extends React.Component<any, any> {
       dangerouslySetInnerHTML={{ __html: he.encode(content) + "\n\n" }}
 
       onKeyDown={this.onKeyDown}
-      onInput={this.onChange}
     />
   }
 
   private getValue() {
-    return this.ref.current.innerText.replace(/\n\n$/, "")
-  }
-
-  private getCaretOffset() {
-    const range = window.getSelection().getRangeAt(0)
-    let caretOffset = range.endOffset
-    let node = range.endContainer
-    
-    while (node !== this.ref.current) {
-      const siblingNodes = Array.from(node.parentNode.childNodes)
-      const index = siblingNodes.indexOf(node)
-
-      console.log({
-        index,
-        siblingNodes,
-      })
-
-      for(const childNode of siblingNodes.slice(0, index)) {
-        caretOffset += (childNode.innerText || childNode.textContent || "").length
-      }
-      node = node.parentNode
-    }
-
-    return caretOffset
+    return this.ref.current !== null
+      ? this.ref.current.innerText.replace(/\n\n$/, "")
+      : ""
   }
 
   private getTextAroundTheCaret(before: number, after: number) {
-    const offset = this.getCaretOffset()
+    if (this.ref.current === null) {
+      throw new Error("Component has not yet rendered")
+    }
+
+    const offset = getCaretOffsetInside(this.ref.current)
     return {
       offset,
       text: this.getValue().slice(offset - before, offset + after),
@@ -88,10 +72,13 @@ class Item extends React.Component<any, any> {
     if (match) {
       console.log("splitting", this.props.index, offset)
       this.props.onSplit(this.props.index, offset)
+      event.preventDefault()
     }
   }
 
   focusEnd = () => {
+    if (!this.ref.current) return
+
     this.ref.current.focus()
     const selection = window.getSelection()
 
@@ -99,8 +86,8 @@ class Item extends React.Component<any, any> {
     const node = this.ref.current.childNodes[nodeCount-1]
 
     const range = document.createRange()
-    range.setStart(node, node.textContent.length)
-    range.setEnd(node, node.textContent.length)
+    range.setStart(node, (node.textContent || "").length)
+    range.setEnd(node, (node.textContent || "").length)
 
     selection.removeAllRanges()
     selection.addRange(range)
@@ -108,7 +95,7 @@ class Item extends React.Component<any, any> {
 }
 
 class List extends React.Component<any> {
-  private itemInstances: Item[] = []
+  private itemInstances: (Item | null)[] = []
   
   render() {
     return <>
